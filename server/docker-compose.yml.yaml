@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  database:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: bank_taxi_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  server:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: database
+      DB_NAME: bank_taxi_db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      JWT_SECRET: your-super-secret-key
+    depends_on:
+      - database
+
+volumes:
+  postgres_data:

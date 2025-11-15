@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Стабильность Банк & Такси</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        header {
+            background: linear-gradient(135deg, #2c3e50, #1a2530);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+        .subtitle {
+            font-size: 18px;
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+        .main-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .main-tab {
+            padding: 16px 25px;
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .main-tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .main-tab:hover {
+            background-color: #d6eaf8;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .players-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .player-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            background: linear-gradient(to bottom, #ffffff, #f9f9f9);
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        .player-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        .player-name {
+            font-weight: bold;
+            font-size: 20px;
+            color: #2c3e50;
+        }
+        .player-passport {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .balance {
+            font-size: 22px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .positive {
+            color: #27ae60;
+        }
+        .negative {
+            color: #e74c3c;
+        }
+        .fines, .loans {
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: #fff3f3;
+            border-left: 4px solid #e74c3c;
+        }
+        .admin-panel {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input, select, button, textarea {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 16px;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+            padding: 14px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .edit-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: auto;
+            padding: 10px 20px;
+            background-color: #2ecc71;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        .edit-btn:hover {
+            background-color: #27ae60;
+        }
+        .repay-all-btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            margin-top: 8px;
+            width: auto;
+            background-color: #e67e22;
+            border-radius: 4px;
+        }
+        .repay-all-btn:hover {
+            background-color: #d35400;
+        }
+        .clear-history-btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            margin-top: 8px;
+            width: auto;
+            background-color: #e74c3c;
+            border-radius: 4px;
+        }
+        .clear-history-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        /* Такси стили */
+        .taxi-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .taxi-tab {
+            padding: 16px 25px;
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .taxi-tab.active {
+            background-color: #f39c12;
+            color: white;
+        }
+        .taxi-tab:hover {
+            background-color: #fde3a7;
+        }
+        .shift-form, .call-item, .dispatcher-call {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .active-shift {
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #4caf50;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .collapsible {
+            background-color: #2c3e50;
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .collapsible:after {
+            content: '\002B';
+            color: white;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+            font-size: 20px;
+        }
+        .active-collapsible:after {
+            content: "\2212";
+        }
+        .collapsible-content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: #f9f9f9;
+            border-radius: 0 0 6px 6px;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #eee;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .history {
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: white;
+        }
+        .history.hidden {
+            display: none;
+        }
+        .history-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .toggle-history-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 20px;
+            margin: 0;
+            padding: 0 5px;
+        }
+        
+        /* Улучшенные кнопки действий */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        .action-buttons button {
+            flex: 1;
+            padding: 12px;
+            font-size: 15px;
+            border-radius: 6px;
+        }
+        
+        /* Стили для подтверждения вызовов */
+        .pending-approval {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+        }
+        .approval-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .approval-actions button {
+            margin-top: 0;
+            padding: 10px 15px;
+        }
+        .btn-approve {
+            background-color: #28a745;
+        }
+        .btn-approve:hover {
+            background-color: #218838;
+        }
+        .btn-reject {
+            background-color: #dc3545;
+        }
+        .btn-reject:hover {
+            background-color: #c82333;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .players-container {
+                grid-template-columns: 1fr;
+            }
+            .main-tabs, .taxi-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Стабильность Банк & Такси</h1>
+            <p class="subtitle">Ваш надежный финансовый и транспортный партнер</p>
+            <button class="edit-btn" id="toggleEditBtn">Редактировать</button>
+        </header>
+
+        <div class="main-tabs">
+            <div class="main-tab active" data-tab="bank">Банковская система</div>
+            <div class="main-tab" data-tab="taxi">Такси</div>
+        </div>
+
+        <div class="tab-content active" id="bank">
+            <h2>Клиенты банка</h2>
+            <div class="players-container" id="playersContainer">
+                <!-- Здесь будут отображаться карточки игроков -->
+            </div>
+
+            <div class="admin-panel" id="adminPanel">
+                <div class="form-group">
+                    <label for="adminPassword">Пароль администратора</label>
+                    <input type="password" id="adminPassword" placeholder="Введите пароль">
+                    <button onclick="checkAdminPassword()">Проверить пароль</button>
+                </div>
+                
+                <div id="adminFunctions" style="display: none;">
+                    <h3>Административные функции</h3>
+                    
+                    <div class="form-group">
+                        <label for="playerName">Имя</label>
+                        <input type="text" id="playerName" placeholder="Введите имя">
+                    </div>
+                    <div class="form-group">
+                        <label for="playerMiddleName">Отчество</label>
+                        <input type="text" id="playerMiddleName" placeholder="Введите отчество">
+                    </div>
+                    <div class="form-group">
+                        <label for="playerPassport">Паспортные данные</label>
+                        <input type="text" id="playerPassport" placeholder="Серия и номер паспорта">
+                    </div>
+                    <div class="action-buttons">
+                        <button onclick="addPlayer()">Добавить клиента</button>
+                        <button onclick="removePlayer()" style="background-color: #e74c3c;">Удалить клиента</button>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px;">Управление финансами</h3>
+                    <div class="form-group">
+                        <label for="selectedPlayer">Выберите клиента</label>
+                        <select id="selectedPlayer">
+                            <option value="">-- Выберите клиента --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="operationType">Тип операции</label>
+                        <select id="operationType">
+                            <option value="deposit">Пополнение счета</option>
+                            <option value="withdraw">Снятие со счета</option>
+                            <option value="fine">Наложить штраф</option>
+                            <option value="loan">Выдать кредит</option>
+                            <option value="loanRepayment">Погашение кредита</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Сумма</label>
+                        <input type="number" id="amount" placeholder="Введите сумму">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Описание</label>
+                        <input type="text" id="description" placeholder="Введите описание операции">
+                    </div>
+                    <button onclick="performFinancialOperation()">Выполнить операцию</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="taxi">
+            <div class="taxi-tabs">
+                <div class="taxi-tab active" data-tab="driver">Панель таксиста</div>
+                <div class="taxi-tab" data-tab="dispatcher">Диспетчерская</div>
+            </div>
+
+            <div class="tab-content active" id="driver">
+                <div class="shift-form" id="shiftForm">
+                    <h3>Начать смену</h3>
+                    <div class="form-group">
+                        <label for="driverName">Имя</label>
+                        <input type="text" id="driverName" placeholder="Введите имя">
+                    </div>
+                    <div class="form-group">
+                        <label for="driverMiddleName">Отчество</label>
+                        <input type="text" id="driverMiddleName" placeholder="Введите отчество">
+                    </div>
+                    <div class="form-group">
+                        <label for="driverPassport">Паспортные данные</label>
+                        <input type="text" id="driverPassport" placeholder="Серия и номер паспорта">
+                    </div>
+                    <div class="form-group">
+                        <label for="carType">Тип автомобиля</label>
+                        <select id="carType">
+                            <option value="personal">Личный автомобиль</option>
+                            <option value="company">Автомобиль таксопарка</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="carBrand">Марка автомобиля</label>
+                        <input type="text" id="carBrand" placeholder="Введите марку">
+                    </div>
+                    <div class="form-group">
+                        <label for="carModel">Модель автомобиля</label>
+                        <input type="text" id="carModel" placeholder="Введите модель">
+                    </div>
+                    <div class="form-group">
+                        <label for="carColor">Цвет автомобиля</label>
+                        <input type="text" id="carColor" placeholder="Введите цвет">
+                    </div>
+                    <div class="form-group">
+                        <label for="carNumber">Госномер автомобиля</label>
+                        <input type="text" id="carNumber" placeholder="Введите госномер">
+                    </div>
+                    <button onclick="startShift()">Начать смену</button>
+                </div>
+
+                <div id="activeShiftsContainer">
+                    <!-- Активные смены будут добавляться здесь -->
+                </div>
+            </div>
+
+            <div class="tab-content" id="dispatcher">
+                <div class="shift-form">
+                    <h3>Диспетчерская</h3>
+                    <div class="form-group">
+                        <label for="dispatcherPassword">Пароль диспетчера</label>
+                        <input type="password" id="dispatcherPassword" placeholder="Введите пароль">
+                        <button onclick="authDispatcher()">Авторизоваться</button>
+                    </div>
+                </div>
+
+                <div id="dispatcherPanel" style="display: none;">
+                    <h3>Панель диспетчера</h3>
+                    
+                    <div class="driver-list">
+                        <h4>Таксисты на смене</h4>
+                        <div id="driversOnShift"></div>
+                    </div>
+                    
+                    <div class="call-form">
+                        <h4>Создать вызов</h4>
+                        <button onclick="generateCall()">Сгенерировать вызов</button>
+                        <div class="form-group">
+                            <label for="callerName">Имя клиента</label>
+                            <input type="text" id="callerName" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="fromAddress">Откуда</label>
+                            <input type="text" id="fromAddress" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="toAddress">Куда</label>
+                            <input type="text" id="toAddress" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="callSalary">Зарплата</label>
+                            <input type="text" id="callSalary" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignDriver">Назначить таксиста</label>
+                            <select id="assignDriver">
+                                <option value="">Выберите таксиста</option>
+                            </select>
+                        </div>
+                        <button onclick="createCall()">Создать вызов</button>
+                    </div>
+                    
+                    <div class="active-calls">
+                        <h4>Активные вызовы</h4>
+                        <div id="dispatcherCallsList"></div>
+                    </div>
+                    
+                    <div class="pending-approval">
+                        <h4>Вызовы, ожидающие подтверждения</h4>
+                        <div id="pendingApprovalList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Константы
+        const ADMIN_PASSWORD = "121212";
+        const DISPATCHER_PASSWORD = "121212";
+        
+        // Данные игроков
+        let players = JSON.parse(localStorage.getItem('bankPlayers')) || [];
+        
+        // Данные такси
+        let taxiData = JSON.parse(localStorage.getItem('taxiData')) || {
+            shifts: [],
+            calls: [],
+            activeDrivers: []
+        };
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            renderPlayers();
+            updatePlayerDropdown();
+            setupTabs();
+            renderActiveShifts();
+            updateDriverDropdown();
+        });
+        
+        // Настройка вкладок
+        function setupTabs() {
+            // Основные вкладки (Банк/Такси)
+            const mainTabs = document.querySelectorAll('.main-tab');
+            mainTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+            
+            // Вкладки такси
+            const taxiTabs = document.querySelectorAll('.taxi-tab');
+            taxiTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.taxi-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('#taxi .tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                    
+                    // Если открываем диспетчерскую, проверяем авторизацию
+                    if (tab.dataset.tab === 'dispatcher') {
+                        const password = prompt('Введите пароль диспетчера:');
+                        if (password !== DISPATCHER_PASSWORD) {
+                            alert('Неверный пароль диспетчера!');
+                            // Возвращаемся на вкладку таксиста
+                            document.querySelector('.taxi-tab[data-tab="driver"]').click();
+                            return;
+                        } else {
+                            document.getElementById('dispatcherPanel').style.display = 'block';
+                            updateDriversList();
+                            updateDispatcherCalls();
+                            updatePendingApprovals();
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Проверка пароля администратора
+        function checkAdminPassword() {
+            const password = document.getElementById('adminPassword').value;
+            if (password !== ADMIN_PASSWORD) {
+                alert('Неверный пароль администратора!');
+                return;
+            }
+            
+            document.getElementById('adminFunctions').style.display = 'block';
+            updatePlayerDropdown();
+        }
+        
+        // Обновление выпадающего списка с игроками
+        function updatePlayerDropdown() {
+            const playerDropdown = document.getElementById('selectedPlayer');
+            playerDropdown.innerHTML = '<option value="">-- Выберите клиента --</option>';
+            
+            players.forEach(player => {
+                const option = document.createElement('option');
+                option.value = player.passport;
+                option.textContent = `${player.name} ${player.middleName} (${player.passport})`;
+                playerDropdown.appendChild(option);
+            });
+        }
+        
+        // Отображение игроков
+        function renderPlayers() {
+            const container = document.getElementById('playersContainer');
+            container.innerHTML = '';
+            
+            if (players.length === 0) {
+                container.innerHTML = '<p>Нет добавленных клиентов</p>';
+                return;
+            }
+            
+            players.forEach(player => {
+                const playerCard = document.createElement('div');
+                playerCard.className = 'player-card';
+                
+                // Инициализируем свойство для отслеживания состояния истории
+                if (player.historyHidden === undefined) {
+                    player.historyHidden = false;
+                }
+                
+                playerCard.innerHTML = `
+                    <div class="player-header">
+                        <div>
+                            <div class="player-name">${player.name} ${player.middleName}</div>
+                            <div class="player-passport">Паспорт: ${player.passport}</div>
+                        </div>
+                    </div>
+                    <div class="balance ${player.balance >= 0 ? 'positive' : 'negative'}">
+                        Баланс: ${player.balance} ₽
+                    </div>
+                    <div class="fines">
+                        Штрафы: ${player.fines} ₽
+                        ${player.fines > 0 ? `<button class="repay-all-btn" onclick="repayAllFines('${player.passport}')">Погасить все штрафы</button>` : ''}
+                    </div>
+                    <div class="loans">
+                        Кредиты: ${player.loans} ₽
+                        ${player.loans > 0 ? `<button class="repay-all-btn" onclick="repayAllLoans('${player.passport}')">Погасить все кредиты</button>` : ''}
+                    </div>
+                    <div class="history-header" onclick="toggleHistory('${player.passport}')">
+                        <h4>История операций</h4>
+                        <button class="toggle-history-btn">${player.historyHidden ? '▼' : '▲'}</button>
+                    </div>
+                    <div class="history ${player.historyHidden ? 'hidden' : ''}">
+                        ${player.history && player.history.length ? 
+                            player.history.map(record => 
+                                `<div class="history-item">${record.date}: ${record.amount} ₽ - ${record.description}</div>`
+                            ).join('') : 
+                            '<div>Нет операций</div>'
+                        }
+                        ${player.history && player.history.length > 0 ? 
+                            `<button class="clear-history-btn" onclick="clearHistory('${player.passport}')">Очистить историю</button>` : 
+                            ''
+                        }
+                    </div>
+                `;
+                
+                container.appendChild(playerCard);
+            });
+        }
+        
+        // Переключение отображения истории
+        function toggleHistory(passport) {
+            const player = players.find(p => p.passport === passport);
+            if (player) {
+                player.historyHidden = !player.historyHidden;
+                savePlayers();
+                renderPlayers();
+            }
+        }
+        
+        // Добавление игрока
+        function addPlayer() {
+            const name = document.getElementById('playerName').value;
+            const middleName = document.getElementById('playerMiddleName').value;
+            const passport = document.getElementById('playerPassport').value;
+            
+            if (!name || !middleName || !passport) {
+                alert('Заполните все поля!');
+                return;
+            }
+            
+            if (players.some(player => player.passport === passport)) {
+                alert('Клиент с такими паспортными данными уже существует!');
+                return;
+            }
+            
+            const newPlayer = {
+                name,
+                middleName,
+                passport,
+                balance: 0,
+                fines: 0,
+                loans: 0,
+                history: [],
+                historyHidden: false
+            };
+            
+            players.push(newPlayer);
+            savePlayers();
+            renderPlayers();
+            updatePlayerDropdown();
+            
+            // Очищаем форму
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerMiddleName').value = '';
+            document.getElementById('playerPassport').value = '';
+            
+            alert('Клиент успешно добавлен!');
+        }
+        
+        // Удаление игрока
+        function removePlayer() {
+            const passport = document.getElementById('playerPassport').value;
+            
+            if (!passport) {
+                alert('Введите паспортные данные клиента для удаления!');
+                return;
+            }
+            
+            if (confirm('Вы уверены, что хотите удалить этого клиента?')) {
+                players = players.filter(player => player.passport !== passport);
+                savePlayers();
+                renderPlayers();
+                updatePlayerDropdown();
+                alert('Клиент успешно удален!');
+            }
+        }
+        
+        // Выполнение финансовой операции
+        function performFinancialOperation() {
+            const passport = document.getElementById('selectedPlayer').value;
+            const operationType = document.getElementById('operationType').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const description = document.getElementById('description').value;
+            
+            if (!passport) {
+                alert('Выберите клиента!');
+                return;
+            }
+            
+            if (!amount || amount <= 0) {
+                alert('Введите корректную сумму!');
+                return;
+            }
+            
+            if (!description) {
+                alert('Введите описание операции!');
+                return;
+            }
+            
+            const player = players.find(p => p.passport === passport);
+            if (!player) {
+                alert('Клиент не найден!');
+                return;
+            }
+            
+            // Выполняем операцию в зависимости от типа
+            switch(operationType) {
+                case 'deposit':
+                    player.balance += amount;
+                    player.history.unshift({
+                        date: new Date().toLocaleString(),
+                        amount: +amount,
+                        description: description
+                    });
+                    break;
+                    
+                case 'withdraw':
+                    if (player.balance < amount) {
+                        alert('Недостаточно средств на счете!');
+                        return;
+                    }
+                    player.balance -= amount;
+                    player.history.unshift({
+                        date: new Date().toLocaleString(),
+                        amount: -amount,
+                        description: description
+                    });
+                    break;
+                    
+                case 'fine':
+                    player.fines += amount;
+                    player.history.unshift({
+                        date: new Date().toLocaleString(),
+                        amount: -amount,
+                        description: `Штраф: ${description}`
+                    });
+                    break;
+                    
+                case 'loan':
+                    player.loans += amount;
+                    player.balance += amount;
+                    player.history.unshift({
+                        date: new Date().toLocaleString(),
+                        amount: +amount,
+                        description: `Кредит: ${description}`
+                    });
+                    break;
+                    
+                case 'loanRepayment':
+                    if (player.loans < amount) {
+                        alert('Сумма погашения превышает сумму кредита!');
+                        return;
+                    }
+                    if (player.balance < amount) {
+                        alert('Недостаточно средств для погашения кредита!');
+                        return;
+                    }
+                    player.loans -= amount;
+                    player.balance -= amount;
+                    player.history.unshift({
+                        date: new Date().toLocaleString(),
+                        amount: -amount,
+                        description: `Погашение кредита: ${description}`
+                    });
+                    break;
+            }
+            
+            savePlayers();
+            renderPlayers();
+            
+            // Очищаем форму
+            document.getElementById('amount').value = '';
+            document.getElementById('description').value = '';
+            
+            alert('Операция выполнена успешно!');
+        }
+        
+        // Погашение всех штрафов
+        function repayAllFines(passport) {
+            const password = prompt('Введите пароль администратора:');
+            if (password !== ADMIN_PASSWORD) {
+                alert('Неверный пароль администратора!');
+                return;
+            }
+            
+            const player = players.find(p => p.passport === passport);
+            if (!player) {
+                alert('Клиент не найден!');
+                return;
+            }
+            
+            if (player.fines <= 0) {
+                alert('У клиента нет штрафов для погашения!');
+                return;
+            }
+            
+            if (player.balance < player.fines) {
+                alert('Недостаточно средств для погашения всех штрафов!');
+                return;
+            }
+            
+            if (confirm(`Погасить все штрафы на сумму ${player.fines} ₽?`)) {
+                player.balance -= player.fines;
+                player.history.unshift({
+                    date: new Date().toLocaleString(),
+                    amount: -player.fines,
+                    description: 'Погашение всех штрафов'
+                });
+                player.fines = 0;
+                
+                savePlayers();
+                renderPlayers();
+                alert('Все штрафы успешно погашены!');
+            }
+        }
+        
+        // Погашение всех кредитов
+        function repayAllLoans(passport) {
+            const password = prompt('Введите пароль администратора:');
+            if (password !== ADMIN_PASSWORD) {
+                alert('Неверный пароль администратора!');
+                return;
+            }
+            
+            const player = players.find(p => p.passport === passport);
+            if (!player) {
+                alert('Клиент не найден!');
+                return;
+            }
+            
+            if (player.loans <= 0) {
+                alert('У клиента нет кредитов для погашения!');
+                return;
+            }
+            
+            if (player.balance < player.loans) {
+                alert('Недостаточно средств для погашения всех кредитов!');
+                return;
+            }
+            
+            if (confirm(`Погасить все кредиты на сумму ${player.loans} ₽?`)) {
+                player.balance -= player.loans;
+                player.history.unshift({
+                    date: new Date().toLocaleString(),
+                    amount: -player.loans,
+                    description: 'Погашение всех кредитов'
+                });
+                player.loans = 0;
+                
+                savePlayers();
+                renderPlayers();
+                alert('Все кредиты успешно погашены!');
+            }
+        }
+        
+        // Очистка истории клиента
+        function clearHistory(passport) {
+            const password = prompt('Введите пароль администратора:');
+            if (password !== ADMIN_PASSWORD) {
+                alert('Неверный пароль администратора!');
+                return;
+            }
+            
+            const player = players.find(p => p.passport === passport);
+            if (!player) {
+                alert('Клиент не найден!');
+                return;
+            }
+            
+            if (!player.history || player.history.length === 0) {
+                alert('История операций клиента уже пуста!');
+                return;
+            }
+            
+            if (confirm('Вы уверены, что хотите очистить всю историю операций этого клиента?')) {
+                player.history = [];
+                savePlayers();
+                renderPlayers();
+                alert('История операций успешно очищена!');
+            }
+        }
+        
+        // Сохранение данных в localStorage
+        function savePlayers() {
+            localStorage.setItem('bankPlayers', JSON.stringify(players));
+        }
+        
+        function saveTaxiData() {
+            localStorage.setItem('taxiData', JSON.stringify(taxiData));
+        }
+        
+        // ===== ТАКСИ ФУНКЦИИ =====
+        
+        // Отображение активных смен
+        function renderActiveShifts() {
+            const container = document.getElementById('activeShiftsContainer');
+            container.innerHTML = '';
+            
+            if (taxiData.activeDrivers.length === 0) {
+                container.innerHTML = '<p>Нет активных смен</p>';
+                return;
+            }
+            
+            taxiData.activeDrivers.forEach(driver => {
+                const shiftElement = document.createElement('div');
+                shiftElement.className = 'active-shift';
+                
+                shiftElement.innerHTML = `
+                    <button class="collapsible">Смена: ${driver.name} ${driver.middleName}</button>
+                    <div class="collapsible-content">
+                        <div>
+                            <p><strong>Таксист:</strong> ${driver.name} ${driver.middleName}</p>
+                            <p><strong>Паспорт:</strong> ${driver.passport}</p>
+                            <p><strong>Автомобиль:</strong> ${driver.carBrand} ${driver.carModel}, ${driver.carColor}, ${driver.carNumber}</p>
+                            <p><strong>Начало смены:</strong> ${driver.startTime}</p>
+                        </div>
+                        <button onclick="endShift('${driver.passport}')" style="background-color: #e74c3c;">Завершить смену</button>
+                        
+                        <h4>Текущие вызовы</h4>
+                        <div id="activeCallsList-${driver.passport}"></div>
+                        
+                        <h4>История вызовов</h4>
+                        <div id="callsHistory-${driver.passport}"></div>
+                    </div>
+                `;
+                
+                container.appendChild(shiftElement);
+                updateDriverCalls(driver.passport);
+            });
+            
+            // Добавляем функционал сворачивания/разворачивания
+            const coll = document.getElementsByClassName("collapsible");
+            for (let i = 0; i < coll.length; i++) {
+                coll[i].addEventListener("click", function() {
+                    this.classList.toggle("active-collapsible");
+                    const content = this.nextElementSibling;
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                });
+            }
+        }
+        
+        // Начать смену таксиста
+        function startShift() {
+            const name = document.getElementById('driverName').value;
+            const middleName = document.getElementById('driverMiddleName').value;
+            const passport = document.getElementById('driverPassport').value;
+            const carType = document.getElementById('carType').value;
+            const carBrand = document.getElementById('carBrand').value;
+            const carModel = document.getElementById('carModel').value;
+            const carColor = document.getElementById('carColor').value;
+            const carNumber = document.getElementById('carNumber').value;
+            
+            if (!name || !middleName || !passport || !carBrand || !carModel || !carColor || !carNumber) {
+                alert('Заполните все поля!');
+                return;
+            }
+            
+            // Проверяем, есть ли такой пользователь в банковской системе
+            const player = players.find(p => p.passport === passport && p.name === name && p.middleName === middleName);
+            if (!player) {
+                alert('Ошибка: Ваши данные не найдены в банковской системе. Зарплата не будет начислена!');
+                if (!confirm('Все равно начать смену?')) {
+                    return;
+                }
+            }
+            
+            // Проверяем, не начата ли уже смена
+            const existingShift = taxiData.activeDrivers.find(d => d.passport === passport);
+            if (existingShift) {
+                alert('У вас уже есть активная смена!');
+                return;
+            }
+            
+            // Добавляем таксиста в активные
+            const driver = {
+                name,
+                middleName,
+                passport,
+                carType,
+                carBrand,
+                carModel,
+                carColor,
+                carNumber,
+                startTime: new Date().toLocaleString(),
+                calls: []
+            };
+            
+            taxiData.activeDrivers.push(driver);
+            saveTaxiData();
+            
+            // Очищаем форму
+            document.getElementById('driverName').value = '';
+            document.getElementById('driverMiddleName').value = '';
+            document.getElementById('driverPassport').value = '';
+            document.getElementById('carBrand').value = '';
+            document.getElementById('carModel').value = '';
+            document.getElementById('carColor').value = '';
+            document.getElementById('carNumber').value = '';
+            
+            // Обновляем список активных смен
+            renderActiveShifts();
+            
+            // Обновляем список таксистов у диспетчера
+            updateDriverDropdown();
+            updateDriversList();
+            
+            alert('Смена начата!');
+        }
+        
+        // Завершить смену таксиста
+        function endShift(passport) {
+            if (confirm('Вы уверены, что хотите завершить смену?')) {
+                // Сохраняем данные смены
+                const driverIndex = taxiData.activeDrivers.findIndex(d => d.passport === passport);
+                if (driverIndex !== -1) {
+                    const driver = taxiData.activeDrivers[driverIndex];
+                    driver.endTime = new Date().toLocaleString();
+                    taxiData.shifts.push(driver);
+                    taxiData.activeDrivers.splice(driverIndex, 1);
+                    saveTaxiData();
+                }
+                
+                // Обновляем список активных смен
+                renderActiveShifts();
+                
+                // Обновляем список таксистов у диспетчера
+                updateDriverDropdown();
+                updateDriversList();
+                
+                alert('Смена завершена!');
+            }
+        }
+        
+        // Обновить вызовы таксиста
+        function updateDriverCalls(passport) {
+            const activeCallsList = document.getElementById(`activeCallsList-${passport}`);
+            const callsHistory = document.getElementById(`callsHistory-${passport}`);
+            
+            if (!passport) return;
+            
+            // Активные вызовы
+            const activeCalls = taxiData.calls.filter(call => 
+                call.driverPassport === passport && call.status === 'assigned'
+            );
+            
+            if (activeCalls.length === 0) {
+                if (activeCallsList) activeCallsList.innerHTML = '<p>Нет активных вызовов</p>';
+            } else {
+                if (activeCallsList) {
+                    activeCallsList.innerHTML = '<h4>Активные вызовы:</h4>';
+                    activeCalls.forEach(call => {
+                        activeCallsList.innerHTML += `
+                            <div class="call-item">
+                                <p><strong>Клиент:</strong> ${call.callerName}</p>
+                                <p><strong>Откуда:</strong> ${call.fromAddress}</p>
+                                <p><strong>Куда:</strong> ${call.toAddress}</p>
+                                <p><strong>Зарплата:</strong> ${call.salary} ₽</p>
+                                <div class="call-actions">
+                                    <button onclick="completeCall('${call.id}')">Завершить вызов</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            }
+            
+            // История вызовов
+            const driverCalls = taxiData.calls.filter(call => 
+                call.driverPassport === passport && call.status !== 'assigned'
+            );
+            
+            if (driverCalls.length === 0) {
+                if (callsHistory) callsHistory.innerHTML = '<p>Нет завершенных вызовов</p>';
+            } else {
+                if (callsHistory) {
+                    callsHistory.innerHTML = '';
+                    driverCalls.forEach(call => {
+                        let statusText = '';
+                        if (call.status === 'completed') statusText = '<span class="status-badge status-completed">Ожидает подтверждения</span>';
+                        if (call.status === 'approved') statusText = '<span class="status-badge status-approved">Одобрено</span>';
+                        if (call.status === 'rejected') statusText = '<span class="status-badge status-rejected">Отклонено: ' + call.rejectReason + '</span>';
+                        
+                        callsHistory.innerHTML += `
+                            <div class="completed-call">
+                                <p><strong>Клиент:</strong> ${call.callerName}</p>
+                                <p><strong>Откуда:</strong> ${call.fromAddress}</p>
+                                <p><strong>Куда:</strong> ${call.toAddress}</p>
+                                <p><strong>Зарплата:</strong> ${call.salary} ₽ ${statusText}</p>
+                            </div>
+                        `;
+                    });
+                }
+            }
+        }
+        
+        // Авторизация диспетчера
+        function authDispatcher() {
+            const password = document.getElementById('dispatcherPassword').value;
+            if (password !== DISPATCHER_PASSWORD) {
+                alert('Неверный пароль диспетчера!');
+                return;
+            }
+            
+            document.getElementById('dispatcherPanel').style.display = 'block';
+            updateDriversList();
+            updateDispatcherCalls();
+            updatePendingApprovals();
+        }
+        
+        // Обновить список таксистов у диспетчера
+        function updateDriversList() {
+            const driversList = document.getElementById('driversOnShift');
+            
+            if (taxiData.activeDrivers.length === 0) {
+                driversList.innerHTML = '<p>Нет таксистов на смене</p>';
+            } else {
+                driversList.innerHTML = '';
+                taxiData.activeDrivers.forEach(driver => {
+                    driversList.innerHTML += `
+                        <div class="driver-item">
+                            <p><strong>Таксист:</strong> ${driver.name} ${driver.middleName}</p>
+                            <p><strong>Паспорт:</strong> ${driver.passport}</p>
+                            <p><strong>Автомобиль:</strong> ${driver.carBrand} ${driver.carModel}, ${driver.carColor}, ${driver.carNumber}</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+        
+        // Обновить dropdown с таксистами
+        function updateDriverDropdown() {
+            const driverDropdown = document.getElementById('assignDriver');
+            driverDropdown.innerHTML = '<option value="">Выберите таксиста</option>';
+            
+            taxiData.activeDrivers.forEach(driver => {
+                const option = document.createElement('option');
+                option.value = driver.passport;
+                option.textContent = `${driver.name} ${driver.middleName} (${driver.carBrand} ${driver.carModel})`;
+                driverDropdown.appendChild(option);
+            });
+        }
+        
+        // Сгенерировать вызов
+        function generateCall() {
+            // Случайное имя клиента
+            const clientNames = [
+                "Иван Иванов", "Петр Петров", "Сергей Сергеев", "Алексей Алексеев", 
+                "Мария Смирнова", "Анна Иванова", "Екатерина Петрова", "Ольга Сидорова"
+            ];
+            const callerName = clientNames[Math.floor(Math.random() * clientNames.length)];
+            
+            // Случайные адреса
+            const addresses = [
+                "ул. Тюльпанная, 15",
+                "ул. Абрикосовая, 22",
+                "ул. Полевая, 7",
+                "ул. Васильковая, 36",
+                "ул. Цветочная, 48"
+            ];
+            const fromAddress = addresses[Math.floor(Math.random() * addresses.length)];
+            const toAddress = addresses[Math.floor(Math.random() * addresses.length)];
+            
+            // Случайная зарплата
+            const salary = Math.floor(Math.random() * 1500) + 500;
+            
+            // Заполняем форму
+            document.getElementById('callerName').value = callerName;
+            document.getElementById('fromAddress').value = fromAddress;
+            document.getElementById('toAddress').value = toAddress;
+            document.getElementById('callSalary').value = `${salary} ₽`;
+        }
+        
+        // Создать вызов
+        function createCall() {
+            const callerName = document.getElementById('callerName').value;
+            const fromAddress = document.getElementById('fromAddress').value;
+            const toAddress = document.getElementById('toAddress').value;
+            const salary = document.getElementById('callSalary').value.replace(' ₽', '');
+            const driverPassport = document.getElementById('assignDriver').value;
+            
+            if (!callerName || !fromAddress || !toAddress || !driverPassport) {
+                alert('Заполните все поля!');
+                return;
+            }
+            
+            // Находим данные таксиста
+            const driver = taxiData.activeDrivers.find(d => d.passport === driverPassport);
+            if (!driver) {
+                alert('Ошибка: таксист не найден!');
+                return;
+            }
+            
+            // Создаем вызов
+            const call = {
+                id: Date.now().toString(),
+                callerName,
+                fromAddress,
+                toAddress,
+                salary: parseInt(salary),
+                driverName: `${driver.name} ${driver.middleName}`,
+                driverPassport,
+                carInfo: `${driver.carBrand} ${driver.carModel}, ${driver.carColor}, ${driver.carNumber}`,
+                status: 'assigned',
+                assignedTime: new Date().toLocaleString()
+            };
+            
+            taxiData.calls.push(call);
+            saveTaxiData();
+            
+            // Обновляем списки вызовов
+            updateDriverCalls(driverPassport);
+            updateDispatcherCalls();
+            
+            // Генерируем новый вызов
+            generateCall();
+            document.getElementById('assignDriver').value = '';
+            
+            alert('Вызов создан и назначен таксисту!');
+        }
+        
+        // Завершить вызов
+        function completeCall(callId) {
+            const callIndex = taxiData.calls.findIndex(c => c.id === callId);
+            if (callIndex !== -1) {
+                taxiData.calls[callIndex].status = 'completed';
+                taxiData.calls[callIndex].completedTime = new Date().toLocaleString();
+                saveTaxiData();
+                
+                // Обновляем все активные смены
+                taxiData.activeDrivers.forEach(driver => {
+                    updateDriverCalls(driver.passport);
+                });
+                
+                updateDispatcherCalls();
+                updatePendingApprovals();
+                alert('Вызов завершен! Ожидайте подтверждения диспетчера.');
+            }
+        }
+        
+        // Обновить список вызовов у диспетчера
+        function updateDispatcherCalls() {
+            const activeCallsList = document.getElementById('dispatcherCallsList');
+            
+            // Активные вызовы
+            const activeCalls = taxiData.calls.filter(call => call.status === 'assigned');
+            
+            if (activeCalls.length === 0) {
+                activeCallsList.innerHTML = '<p>Нет активных вызовов</p>';
+            } else {
+                activeCallsList.innerHTML = '';
+                activeCalls.forEach(call => {
+                    activeCallsList.innerHTML += `
+                        <div class="dispatcher-call">
+                            <p><strong>Клиент:</strong> ${call.callerName}</p>
+                            <p><strong>Откуда:</strong> ${call.fromAddress}</p>
+                            <p><strong>Куда:</strong> ${call.toAddress}</p>
+                            <p><strong>Зарплата:</strong> ${call.salary} ₽</p>
+                            <p><strong>Таксист:</strong> ${call.driverName} (${call.carInfo})</p>
+                            <p><strong>Назначен:</strong> ${call.assignedTime}</p>
+                        </div>
+                    `;
+                });
+            }
+        }
+        
+        // Обновить список вызовов, ожидающих подтверждения
+        function updatePendingApprovals() {
+            const pendingList = document.getElementById('pendingApprovalList');
+            
+            // Вызовы, ожидающие подтверждения
+            const pendingCalls = taxiData.calls.filter(call => call.status === 'completed');
+            
+            if (pendingCalls.length === 0) {
+                pendingList.innerHTML = '<p>Нет вызовов, ожидающих подтверждения</p>';
+            } else {
+                pendingList.innerHTML = '';
+                pendingCalls.forEach(call => {
+                    pendingList.innerHTML += `
+                        <div class="pending-call">
+                            <p><strong>Клиент:</strong> ${call.callerName}</p>
+                            <p><strong>Откуда:</strong> ${call.fromAddress}</p>
+                            <p><strong>Куда:</strong> ${call.toAddress}</p>
+                            <p><strong>Зарплата:</strong> ${call.salary} ₽</p>
+                            <p><strong>Таксист:</strong> ${call.driverName}</p>
+                            <p><strong>Завершен:</strong> ${call.completedTime}</p>
+                            <div class="approval-actions">
+                                <button class="btn-approve" onclick="approveCall('${call.id}')">Одобрить</button>
+                                <button class="btn-reject" onclick="rejectCall('${call.id}')">Отклонить</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+        
+        // Одобрить вызов
+        function approveCall(callId) {
+            const callIndex = taxiData.calls.findIndex(c => c.id === callId);
+            if (callIndex !== -1) {
+                const call = taxiData.calls[callIndex];
+                call.status = 'approved';
+                call.approvedTime = new Date().toLocaleString();
+                
+                // Начисляем зарплату таксисту
+                const driver = players.find(p => p.passport === call.driverPassport);
+                if (driver) {
+                    driver.balance += call.salary;
+                    if (!driver.history) driver.history = [];
+                    driver.history.unshift({
+                        date: new Date().toLocaleString(),
+                        amount: +call.salary,
+                        description: `Оплата за вызов такси: ${call.callerName} (${call.fromAddress} -> ${call.toAddress})`
+                    });
+                    savePlayers();
+                    renderPlayers();
+                }
+                
+                saveTaxiData();
+                updateDriverCalls(call.driverPassport);
+                updatePendingApprovals();
+                alert('Вызов одобрен! Зарплата начислена на счет таксиста.');
+            }
+        }
+        
+        // Отклонить вызов
+        function rejectCall(callId) {
+            const reason = prompt('Укажите причину отказа:');
+            if (!reason) return;
+            
+            const callIndex = taxiData.calls.findIndex(c => c.id === callId);
+            if (callIndex !== -1) {
+                taxiData.calls[callIndex].status = 'rejected';
+                taxiData.calls[callIndex].rejectReason = reason;
+                taxiData.calls[callIndex].rejectedTime = new Date().toLocaleString();
+                saveTaxiData();
+                
+                updateDriverCalls(taxiData.calls[callIndex].driverPassport);
+                updatePendingApprovals();
+                alert('Вызов отклонен!');
+            }
+        }
+    </script>
+</body>
+</html>
